@@ -1,6 +1,52 @@
+import { FormEvent, useState } from "react"
+import { TCategory } from "../types"
+import { todayISO } from "../format"
+import { CATEGORY_LABELS, CATEGORY_LIST } from "../categories"
+import { usePaymentsStore } from "../store"
+
 export default function PaymentForm() {
+    const [title, setTitle] = useState<string>("")
+    const [amount, setAmount] = useState<string>("")
+    const [due, setDue] = useState<string>(todayISO())
+    const [category, setCategory] = useState<TCategory>("video")
+    const [error, setError] = useState<string>("")
+    const addPayment = usePaymentsStore((e) => e.addPayment)
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault()
+
+        const trimmedTitle = title.trim()
+        const parsedAmount = Number(amount.trim().replace(",", "."))
+
+        if (!trimmedTitle) {
+            setError("Введите название подписки.")
+            return
+        }
+
+        if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+            setError("Введите корректную цену больше нуля.")
+            return
+        }
+
+        if (!due) {
+            setError("Укажите дату оплаты.")
+            return
+        }
+
+        addPayment({
+            title: trimmedTitle,
+            amount: parsedAmount,
+            due,
+            category,
+        });
+
+        setTitle("")
+        setAmount("")
+        setError("")
+    }
+
     return (
-        <form className="box">
+        <form className="box" onSubmit={handleSubmit}>
             <h2 className="h">Новая подписка</h2>
 
             <label className="field">
@@ -9,28 +55,51 @@ export default function PaymentForm() {
                     type="text"
                     placeholder="Например, Figma"
                     maxLength={60}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                 />
             </label>
 
             <div className="two">
                 <label className="field">
                     <span>Цена, ₽</span>
-                    <input type="text" inputMode="decimal" placeholder="0" />
+                    <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
                 </label>
                 <label className="field">
                     <span>Оплатить до</span>
-                    <input type="date" />
+                    <input
+                        type="date"
+                        value={due}
+                        onChange={(e) => setDue(e.target.value)}
+                    />
                 </label>
             </div>
 
             <label className="field">
                 <span>Категория</span>
-                <select>
-                    <option>Категория 1</option>
+                <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value as TCategory)}
+                >
+                    {CATEGORY_LIST.map((el, i) => (
+                        <option value={el} key={i}>
+                            {CATEGORY_LABELS[el].label}
+                        </option>
+                    ))}
                 </select>
             </label>
 
-            <p className="error" role="alert"></p>
+            {error && (
+                <p className="error" role="alert">
+                    {error}
+                </p>
+            )}
 
             <button className="btn" type="submit">
                 Добавить
