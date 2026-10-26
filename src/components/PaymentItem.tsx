@@ -7,12 +7,8 @@ interface IPaymentItemProps {
     payment: IPayment
 }
 export default function PaymentItem({ payment }: IPaymentItemProps) {
-    const { day, month } = dateParts(payment.due)
-
-    const meta = payment.category
-        ? CATEGORY_LABELS[payment.category]
-        : CATEGORY_LABELS["other"]    
-    // const meta = CATEGORY_LABELS[category]
+    const { day, month } = dateParts(payment.due) 
+    const label = CATEGORY_LABELS[payment.category]
 
     const togglePaid = usePaymentsStore((e) => e.togglePaid)
     const removePayment = usePaymentsStore((e) => e.removePayment)
@@ -26,7 +22,7 @@ export default function PaymentItem({ payment }: IPaymentItemProps) {
                 </time>
                 <div className="info">
                     <span className="name">{payment.title}</span>
-                    <span className={`tag apps`}>{meta.label}</span>
+                    <span className={`tag ${payment.category}`}>{label}</span>
                 </div>
                 <span className="price">{formatMoney(payment.amount)}</span>
             </div>

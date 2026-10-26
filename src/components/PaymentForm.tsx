@@ -87,9 +87,9 @@ export default function PaymentForm() {
                     value={category}
                     onChange={(e) => setCategory(e.target.value as TCategory)}
                 >
-                    {CATEGORY_LIST.map((el, i) => (
-                        <option value={el} key={i}>
-                            {CATEGORY_LABELS[el].label}
+                    {CATEGORY_LIST.map((el) => (
+                        <option value={el} key={el}>
+                            {CATEGORY_LABELS[el]}
                         </option>
                     ))}
                 </select>

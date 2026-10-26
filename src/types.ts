@@ -5,8 +5,8 @@ export interface IPayment {
     title: string,
     amount: number,
     due: string,
-    category?: TCategory,
-    paid: boolean
+    category: TCategory,
+    paid: boolean,
 }
 
 export interface INewPayment extends Omit<IPayment, "id" | "paid"> {}
